@@ -36,3 +36,47 @@ module qa_config {
   }
 } 
 
+data aws_iam_policy_document dynamodb_resource_policy {
+  statement {
+    actions = ["dynamodb:*"]
+    effect = "Allow"
+    principals {
+      type = "Service"
+      identifiers = [
+        "lambda.amazonaws.com"
+      ]
+    }
+    condition {
+      test   = "StringEquals"
+      variable = "aws:SourceOrgID"
+      values  = [data.aws_organizations_organization.current.id]
+    }
+  }  statement {
+    actions = ["dynamodb:*"]
+    effect = "Allow"
+    principals {
+      identifiers = ["arn:aws:iam::646688815978:root"]
+      type = "AWS"
+    }
+    condition {
+      test   = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values  = [data.aws_organizations_organization.current.id]
+    }
+  }
+}
+
+resource aws_dynamodb_resource_policy attach_to_qatags  {
+  policy       = data.aws_iam_policy_document.dynamodb_resource_policy.json
+  resource_arn = module.QaTags.table_arn
+}
+
+resource aws_dynamodb_resource_policy attach_to_qaattributes  {
+  policy       = data.aws_iam_policy_document.dynamodb_resource_policy.json
+  resource_arn = module.QaAttributes.table_arn
+}
+
+resource aws_dynamodb_resource_policy attach_to_qa_config  {
+  policy       = data.aws_iam_policy_document.dynamodb_resource_policy.json
+  resource_arn = module.qa_config.table_arn
+} 

@@ -1,12 +1,14 @@
 {
-  "name": "nested-dependency-example",
+  "name": "nested-dependency-demo",
   "version": "1.0.0",
-  "description": "A project demonstrating nested dependency resolution",
-  "main": "index.js",
   "dependencies": {
     "@angular/compiler-cli": "17.2.0"
   },
-  "engines": {
-    "node": ">=18.13.0"
+  "overrides": {
+    "@angular/compiler-cli": {
+      "@babel/core": {
+        "semver": "7.5.4"
+      }
+    }
   }
 }
